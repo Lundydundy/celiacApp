@@ -1,6 +1,3 @@
-import { PrismaClient } from '@prisma/client';
-export declare const prisma: PrismaClient<import(".prisma/client").Prisma.PrismaClientOptions, never, import("@prisma/client/runtime/library").DefaultArgs>;
-export declare const connectDatabase: () => Promise<void>;
-export declare const disconnectDatabase: () => Promise<void>;
-export default prisma;
-//# sourceMappingURL=database.d.ts.map
+version https://git-lfs.github.com/spec/v1
+oid sha256:24506bead343866956f87e1d95746bbc0a53d68bbab0f60648a99a4ca6cd024c
+size 386

@@ -1,13 +1,3 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import { AuthProvider } from './hooks/useAuth.tsx'
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </StrictMode>,
-)
+version https://git-lfs.github.com/spec/v1
+oid sha256:b7eaf486250b3b3abeb26541d408148b8334c46342baed9b34ffc4b119b79e91
+size 322

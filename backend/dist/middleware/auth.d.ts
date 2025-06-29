@@ -1,5 +1,3 @@
-import { Response, NextFunction } from 'express';
-import { AuthenticatedRequest } from '../types';
-export declare const authenticateToken: (req: AuthenticatedRequest, res: Response, next: NextFunction) => Promise<void>;
-export declare const optionalAuth: (req: AuthenticatedRequest, res: Response, next: NextFunction) => Promise<void>;
-//# sourceMappingURL=auth.d.ts.map
+version https://git-lfs.github.com/spec/v1
+oid sha256:5b071b4f2cae4f0e8047c37d734600360508a2c34285d49a8056512999bb2d19
+size 370
