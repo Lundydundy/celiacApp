@@ -1,0 +1,141 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  products        Product[]
+  receipts        Receipt[]
+  medicalExpenses MedicalExpense[]
+  taxProfiles     TaxProfile[]
+
+  @@map("users")
+}
+
+model Product {
+  id           String   @id @default(cuid())
+  name         String
+  category     String
+  brand        String?
+  isGlutenFree Boolean  @default(true)
+  price        Float?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Receipt items can reference this product as either the purchased item or comparison item
+  receiptItemsPurchased ReceiptItem[] @relation("PurchasedProduct")
+  receiptItemsComparison ReceiptItem[] @relation("ComparisonProduct")
+
+  @@map("products")
+}
+
+model Receipt {
+  id             String   @id @default(cuid())
+  storeName      String
+  receiptDate    DateTime
+  totalAmount    Float
+  eligibleAmount Float
+  imageUrl       String?
+  imageFileName  String?  // Original filename
+  imageMimeType  String?  // MIME type (image/jpeg, image/png, etc.)
+  imageSize      Int?     // File size in bytes
+  notes          String?
+  filePath       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  userId String
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items  ReceiptItem[]
+
+  @@map("receipts")
+}
+
+model ReceiptItem {
+  id                String  @id @default(cuid())
+  name              String  // Name of the item as it appears on receipt
+  price             Float   // Actual price paid for the gluten-free item
+  quantity          Float   @default(1) // Quantity of items purchased
+  isEligible        Boolean @default(true) // Whether this item is eligible for tax deduction
+  
+  // Product references for comparison calculation
+  purchasedProductId   String? // The gluten-free product that was purchased
+  purchasedProduct     Product? @relation("PurchasedProduct", fields: [purchasedProductId], references: [id], onDelete: SetNull)
+  
+  comparisonProductId  String? // The regular product to compare against
+  comparisonProduct    Product? @relation("ComparisonProduct", fields: [comparisonProductId], references: [id], onDelete: SetNull)
+  
+  comparisonPrice      Float?  // Price of the comparison product (can override product.price)
+  incrementalCost      Float?  // Calculated difference (price - comparisonPrice)
+
+  // Relations
+  receiptId String
+  receipt   Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@map("receipt_items")
+}
+
+model MedicalExpense {
+  id          String                 @id @default(cuid())
+  description String
+  amount      Float
+  date        DateTime
+  category    MedicalExpenseCategory
+  provider    String?
+  notes       String?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("medical_expenses")
+}
+
+enum MedicalExpenseCategory {
+  consultation
+  medication
+  test
+  supplement
+  other
+}
+
+model TaxProfile {
+  id               String   @id @default(cuid())
+  year             Int      // Tax year (e.g., 2024)
+  netIncome        Float?   // User's net income for the year
+  dependantIncome  Float?   // Dependant's net income (if applicable)
+  claimingFor      String   @default("self") // "self" or "dependant"
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Ensure one profile per user per year
+  @@unique([userId, year])
+  @@map("tax_profiles")
+}
