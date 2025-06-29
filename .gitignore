@@ -102,5 +102,9 @@ uploads/
 
 # Prisma generated files
 backend/prisma/migrations/
+
 #
 C:\Users\matte\Desktop\coding\celiacApp\backend\uploads
+
+*.csv
+*.ps1
